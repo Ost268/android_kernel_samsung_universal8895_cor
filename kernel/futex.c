@@ -2237,13 +2237,10 @@ static void unqueue_me_pi(struct futex_q *q)
 
 	spin_unlock(q->lock_ptr);
 }
-
 static int __fixup_pi_state_owner(u32 __user *uaddr, struct futex_q *q,
 				  struct task_struct *argowner)
 {
-	
 	struct futex_pi_state *pi_state = q->pi_state;
-
 	struct task_struct *oldowner, *newowner;
 	u32 uval, curval, newval, newtid;
 	int err = 0;
@@ -2253,7 +2250,6 @@ static int __fixup_pi_state_owner(u32 __user *uaddr, struct futex_q *q,
 	/* Owner died? */
 	if (!pi_state->owner)
 		newtid |= FUTEX_OWNER_DIED;
-
 	/*
 	 * We are here because either:
 	 *
