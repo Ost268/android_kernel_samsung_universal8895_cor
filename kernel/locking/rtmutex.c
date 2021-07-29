@@ -1284,6 +1284,19 @@ rt_mutex_slowlock(struct rt_mutex *lock, int state,
 	return ret;
 }
 
+static inline int __rt_mutex_slowtrylock(struct rt_mutex *lock)
+{
+	int ret = try_to_take_rt_mutex(lock, current, NULL);
+
+	/*
+	 * try_to_take_rt_mutex() sets the lock waiters bit
+	 * unconditionally. Clean this up.
+	 */
+	fixup_rt_mutex_waiters(lock);
+
+	return ret;
+}
+
 /*
  * Slow path try-lock function:
  */
@@ -1304,14 +1317,8 @@ static inline int rt_mutex_slowtrylock(struct rt_mutex *lock)
 	 * try to acquire the lock.
 	 */
 	raw_spin_lock(&lock->wait_lock);
-
-	ret = try_to_take_rt_mutex(lock, current, NULL);
-
-	/*
-	 * try_to_take_rt_mutex() sets the lock waiters bit
-	 * unconditionally. Clean this up.
-	 */
-	fixup_rt_mutex_waiters(lock);
+	
+        ret = __rt_mutex_slowtrylock(lock);
 
 	raw_spin_unlock(&lock->wait_lock);
 
