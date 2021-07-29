@@ -2941,7 +2941,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
 		if (!ealg->pfkey_supported)
 			continue;
 
-		if (!(ealg_tmpl_set(t, ealg) && ealg->available))
+		if (aalg_tmpl_set(t, aalg))
 			continue;
 
 		for (k = 1; ; k++) {
@@ -2952,7 +2952,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
 			if (!aalg->pfkey_supported)
 				continue;
 
-			if (aalg_tmpl_set(t, aalg) && aalg->available)
+			if (!(ealg_tmpl_set(t, ealg)))
 				sz += sizeof(struct sadb_comb);
 		}
 	}
@@ -2978,7 +2978,7 @@ static void dump_ah_combs(struct sk_buff *skb, const struct xfrm_tmpl *t)
 		if (!aalg->pfkey_supported)
 			continue;
 
-		if (aalg_tmpl_set(t, aalg) && aalg->available) {
+		if (aalg_tmpl_set(t, aalg))
 			struct sadb_comb *c;
 			c = (struct sadb_comb*)skb_put(skb, sizeof(struct sadb_comb));
 			memset(c, 0, sizeof(*c));
